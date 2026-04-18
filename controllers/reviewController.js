@@ -13,22 +13,39 @@ const getReviews = async (req, res) => {
 // ২. নতুন রিভিউ তৈরি
 const createReview = async (req, res) => {
     try {
-        // মডেলে 'text' থাকলে এখানেও 'text' ব্যবহার করতে হবে
         const { name, text, rating } = req.body; 
-        
         const review = await Review.create({ 
             name, 
-            text, // মডেলের ফিল্ডের সাথে মিলানো হলো
+            text, 
             rating 
         });
-        
         res.status(201).json({ success: true, data: review });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
 };
 
-// ৩. রিভিউ ডিলিট করা
+// ৩. রিভিউ আপডেট/এডিট করা (নতুন যুক্ত করা হলো)
+const updateReview = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updatedReview = await Review.findByIdAndUpdate(
+            id,
+            { $set: req.body },
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedReview) {
+            return res.status(404).json({ success: false, message: "Review not found" });
+        }
+
+        res.status(200).json({ success: true, data: updatedReview });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+};
+
+// ৪. রিভিউ ডিলিট করা
 const deleteReview = async (req, res) => {
     try {
         const review = await Review.findByIdAndDelete(req.params.id);
@@ -43,4 +60,4 @@ const deleteReview = async (req, res) => {
     }
 };
 
-module.exports = { getReviews, createReview, deleteReview };
+module.exports = { getReviews, createReview, updateReview, deleteReview }; // updateReview এক্সপোর্ট করা হলো

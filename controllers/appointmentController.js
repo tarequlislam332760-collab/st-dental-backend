@@ -15,14 +15,33 @@ const createAppointment = async (req, res) => {
 const getAppointments = async (req, res) => {
     try {
         const appointments = await Appointment.find().sort({ createdAt: -1 });
-        // ফ্রন্টএন্ডে সরাসরি res.data ম্যাপ করার সুবিধার জন্য ডাটা পাঠানো হচ্ছে
         res.status(200).json(appointments); 
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
 };
 
-// ৩. অ্যাপয়েন্টমেন্ট ডিলিট করা (অ্যাডমিন প্যানেল থেকে)
+// ৩. অ্যাপয়েন্টমেন্ট এডিট/আপডেট করা (নতুন যুক্ত করা হলো)
+const updateAppointment = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updatedAppointment = await Appointment.findByIdAndUpdate(
+            id, 
+            { $set: req.body }, 
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedAppointment) {
+            return res.status(404).json({ success: false, message: "Appointment not found" });
+        }
+
+        res.status(200).json({ success: true, data: updatedAppointment });
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+};
+
+// ৪. অ্যাপয়েন্টমেন্ট ডিলিট করা
 const deleteAppointment = async (req, res) => {
     try {
         const { id } = req.params;
@@ -41,5 +60,6 @@ const deleteAppointment = async (req, res) => {
 module.exports = { 
     createAppointment, 
     getAppointments, 
-    deleteAppointment // এটি এক্সপোর্ট করতে ভুলবেন না
+    updateAppointment, // নতুন এক্সপোর্ট
+    deleteAppointment 
 };
