@@ -12,7 +12,7 @@ const reviewRoutes = require('./routes/reviewRoutes');
 const contactRoutes = require('./routes/contactRoutes'); 
 const dashboardRoutes = require('./routes/dashboardRoutes'); // ড্যাশবোর্ড রাউট ইমপোর্ট
 
-// ৩. মিডলওয়্যার ইমপোর্ট
+// ৩. মিডলওয়্যার ইমপোর্ট
 const { errorHandler } = require('./middleware/errorMiddleware');
 const logger = require('./middleware/logger');
 
@@ -24,20 +24,27 @@ connectDB();
 
 const app = express();
 
-// ৪. গ্লোবাল মিডলওয়্যার সেটআপ
+// ৪. গ্লোবাল মিডলওয়্যার সেটআপ
 app.use(cors());
 app.use(express.json());
 app.use(logger); 
 
 // ৫. এপিআই রাউটস
+// অ্যাডমিন প্যানেল এবং হোম পেজের অ্যাপয়েন্টমেন্ট হ্যান্ডেল করবে
 app.use('/api/appointments', appointmentRoutes);
+
+// রিভিউ সেকশন হ্যান্ডেল করবে
 app.use('/api/reviews', reviewRoutes);          
+
+// কন্টাক্ট ফর্ম হ্যান্ডেল করবে
 app.use('/api/contact', contactRoutes);         
-app.use('/api/dashboard', dashboardRoutes); // ড্যাশবোর্ড এপিআই কানেক্ট করা হলো
+
+// অ্যাডমিন ড্যাশবোর্ডের স্ট্যাটাস (Stats) হ্যান্ডেল করবে
+app.use('/api/dashboard', dashboardRoutes); 
 
 // ৬. রুট রাউট
 app.get('/', (req, res) => {
-    res.send('ST Lesser Clinic API is running with all features...');
+    res.send('ST Dental & Facial Clinic API is running perfectly...');
 });
 
 // ৭. ভুল রাউট হ্যান্ডলার (৪০৪)
@@ -56,6 +63,7 @@ app.listen(PORT, () => {
     console.log(`=========================================`.white);
     console.log(`🚀 Server Running on Port: ${PORT}`.yellow.bold);
     console.log(`📁 All Routes Connected Successfully`.cyan);
+    console.log(`📊 Dashboard Stats: ACTIVE`.magenta);
     console.log(`✅ MongoDB: Waiting for connection...`.green);
     console.log(`=========================================`.white);
 });
