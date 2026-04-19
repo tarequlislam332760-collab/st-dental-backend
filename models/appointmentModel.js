@@ -14,27 +14,28 @@ const appointmentSchema = new mongoose.Schema({
   department: {
     type: String,
     required: true,
-    enum: ['Dental Care', 'Facial Aesthetic', 'Maxillofacial Surgery', 'Select Department'],
-    default: 'Select Department'
+    // আপনার ফ্রন্টএন্ডের সিলেক্ট অপশনের সাথে মিলিয়ে রাখা হয়েছে
+    enum: ['Dental Care', 'Facial Aesthetic (Skin/Face)', 'Maxillofacial Surgery', 'General Dentistry'],
   },
-  date: {
-    type: String, // অথবা Date টাইপ ব্যবহার করতে পারেন
+  appointmentDate: {
+    type: String, // '2026-04-20' ফরম্যাটে সেভ করা সহজ ফিল্টার করার জন্য
     required: true
   },
-  time: {
-    type: String,
+  timeSlot: {
+    type: String, // যেমন: '10:00 AM'
     required: true
   },
   status: {
     type: String,
     enum: ['Pending', 'Confirmed', 'Cancelled'],
     default: 'Pending'
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  } 
+  }
+}, { 
+  timestamps: true // এটি অটোমেটিক createdAt এবং updatedAt তৈরি করবে
 });
+
+// একই দিনে, একই সময়ে যাতে দুইজন সিরিয়াল না পায় তার জন্য (Optional Validation)
+// appointmentSchema.index({ appointmentDate: 1, timeSlot: 1 }, { unique: true });
 
 const Appointment = mongoose.model('Appointment', appointmentSchema);
 
