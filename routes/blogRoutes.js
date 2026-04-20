@@ -1,22 +1,52 @@
-const express = require('express');
-const router = express.Router();
-const { 
-    getBlogs, 
-    createBlog, 
-    getBlogById, 
-    updateBlog, 
-    deleteBlog 
-} = require('../controllers/blogController');
+const Blog = require('../models/blogModel');
 
-// সব ব্লগ পেতে এবং নতুন ব্লগ তৈরি করতে
-router.route('/')
-    .get(getBlogs)
-    .post(createBlog);
+// ১. সব ব্লগ দেখা (অ্যাডমিন ও ইউজার সবার জন্য)
+const getBlogs = async (req, res) => {
+    try {
+        const blogs = await Blog.find().sort({ createdAt: -1 });
+        res.status(200).json(blogs);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
 
-// নির্দিষ্ট একটি ব্লগ দেখতে, আপডেট করতে বা ডিলিট করতে
-router.route('/:id')
-    .get(getBlogById)
-    .put(updateBlog)
-    .delete(deleteBlog);
+// ২. নতুন ব্লগ সেভ করা (Save Option)
+const createBlog = async (req, res) => {
+    try {
+        const { title, description, image, category } = req.body;
+        const newBlog = await Blog.create({ title, description, image, category });
+        res.status(201).json(newBlog);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}
 
-module.exports = router;
+// ৩. ব্লগ আপডেট করা (Edit/Update Option)
+const updateBlog = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updatedBlog = await Blog.findByIdAndUpdate(
+            id,
+            { $set: req.body },
+            { new: true, runValidators: true }
+        );
+        if (!updatedBlog) return res.status(404).json({ message: "Blog not found" });
+        res.status(200).json(updatedBlog);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+};
+
+// ৪. ব্লগ ডিলিট করা (Delete Option)
+const deleteBlog = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const blog = await Blog.findByIdAndDelete(id);
+        if (!blog) return res.status(404).json({ message: "Blog not found" });
+        res.status(200).json({ message: "Blog deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+module.exports = { getBlogs, createBlog, updateBlog, deleteBlog };

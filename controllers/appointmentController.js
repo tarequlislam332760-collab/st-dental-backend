@@ -1,17 +1,34 @@
 const Appointment = require('../models/Appointment');
 
-// ১. নতুন অ্যাপয়েন্টমেন্ট তৈরি করা (ওয়েবসাইট থেকে)
+// ১. নতুন অ্যাপয়েন্টমেন্ট তৈরি করা
 const createAppointment = async (req, res) => {
     try {
-        const { name, phone, service } = req.body;
-        const appointment = await Appointment.create({ name, phone, service });
+        // ফ্রন্টএন্ড থেকে এই ৫টি ডাটা অবশ্যই পাঠাতে হবে
+        const { name, phone, service, appointmentDate, timeSlot } = req.body;
+
+        // চেক করা হচ্ছে সব ডাটা আসছে কি না
+        if (!name || !phone || !service || !appointmentDate || !timeSlot) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "সবগুলো ঘর পূরণ করা বাধ্যতামূলক (Required fields missing)" 
+            });
+        }
+
+        const appointment = await Appointment.create({ 
+            name, 
+            phone, 
+            service, 
+            appointmentDate, 
+            timeSlot 
+        });
+
         res.status(201).json({ success: true, data: appointment });
     } catch (error) {
         res.status(400).json({ success: false, message: error.message });
     }
 };
 
-// ২. সব অ্যাপয়েন্টমেন্ট দেখা (অ্যাডমিন প্যানেলের জন্য)
+// ২. সব অ্যাপয়েন্টমেন্ট দেখা
 const getAppointments = async (req, res) => {
     try {
         const appointments = await Appointment.find().sort({ createdAt: -1 });
@@ -21,7 +38,7 @@ const getAppointments = async (req, res) => {
     }
 };
 
-// ৩. অ্যাপয়েন্টমেন্ট এডিট/আপডেট করা (নতুন যুক্ত করা হলো)
+// ৩. অ্যাপয়েন্টমেন্ট আপডেট করা
 const updateAppointment = async (req, res) => {
     try {
         const { id } = req.params;
@@ -46,11 +63,9 @@ const deleteAppointment = async (req, res) => {
     try {
         const { id } = req.params;
         const appointment = await Appointment.findByIdAndDelete(id);
-
         if (!appointment) {
             return res.status(404).json({ success: false, message: "Appointment not found" });
         }
-
         res.status(200).json({ success: true, message: "Appointment deleted successfully" });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
@@ -60,6 +75,6 @@ const deleteAppointment = async (req, res) => {
 module.exports = { 
     createAppointment, 
     getAppointments, 
-    updateAppointment, // নতুন এক্সপোর্ট
+    updateAppointment, 
     deleteAppointment 
 };

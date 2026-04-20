@@ -1,12 +1,15 @@
 const mongoose = require('mongoose');
 
-const appointmentSchema = mongoose.Schema({
-    name: { type: String, required: true },
-    phone: { type: String, required: true },
-    service: { type: String, required: true }, // এটি 'department' হিসেবেও কাজ করবে
-    timeSlot: { type: String, required: true }, // নতুন ফিল্ড
-    appointmentDate: { type: String, required: true }, // নতুন ফিল্ড
-    status: { type: String, default: 'Pending' }, // Pending, Confirmed, Cancelled
-}, { timestamps: true });
+const appointmentSchema = new mongoose.Schema({
+  name: { type: String, required: true, trim: true },
+  phone: { type: String, required: true, trim: true },
+  service: { type: String, required: true }, // এটিই আপনার ডিপার্টমেন্ট বা সার্ভিস
+  appointmentDate: { type: String, required: true }, // যেমন: '2026-04-20'
+  timeSlot: { type: String, required: true }, // যেমন: '10:00 AM'
+  status: { type: String, enum: ['Pending', 'Confirmed', 'Cancelled'], default: 'Pending' }
+}, { 
+  timestamps: true 
+});
 
-module.exports = mongoose.model('Appointment', appointmentSchema);
+const Appointment = mongoose.model('Appointment', appointmentSchema);
+module.exports = Appointment;

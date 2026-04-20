@@ -1,7 +1,6 @@
 const Blog = require('../models/blogModel');
 
-// @desc    Get all blogs
-// @route   GET /api/blogs
+// ১. সব ব্লগ দেখা (অ্যাডমিন ও ইউজার সবার জন্য)
 const getBlogs = async (req, res) => {
     try {
         const blogs = await Blog.find().sort({ createdAt: -1 });
@@ -11,47 +10,43 @@ const getBlogs = async (req, res) => {
     }
 };
 
-// @desc    Create a blog
-// @route   POST /api/blogs
+// ২. নতুন ব্লগ সেভ করা (Save Option)
 const createBlog = async (req, res) => {
     try {
         const { title, description, image, category } = req.body;
-        const blog = await Blog.create({ title, description, image, category });
-        res.status(201).json(blog);
+        const newBlog = await Blog.create({ title, description, image, category });
+        res.status(201).json(newBlog);
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
-};
+}
 
-// @desc    Get single blog
-const getBlogById = async (req, res) => {
-    try {
-        const blog = await Blog.findById(req.params.id);
-        if (blog) res.json(blog);
-        else res.status(404).json({ message: 'Blog not found' });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-};
-
-// @desc    Update blog
+// ৩. ব্লগ আপডেট করা (Edit/Update Option)
 const updateBlog = async (req, res) => {
     try {
-        const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        res.json(updatedBlog);
+        const { id } = req.params;
+        const updatedBlog = await Blog.findByIdAndUpdate(
+            id,
+            { $set: req.body },
+            { new: true, runValidators: true }
+        );
+        if (!updatedBlog) return res.status(404).json({ message: "Blog not found" });
+        res.status(200).json(updatedBlog);
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
 };
 
-// @desc    Delete blog
+// ৪. ব্লগ ডিলিট করা (Delete Option)
 const deleteBlog = async (req, res) => {
     try {
-        await Blog.findByIdAndDelete(req.params.id);
-        res.json({ message: 'Blog removed' });
+        const { id } = req.params;
+        const blog = await Blog.findByIdAndDelete(id);
+        if (!blog) return res.status(404).json({ message: "Blog not found" });
+        res.status(200).json({ message: "Blog deleted successfully" });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
-module.exports = { getBlogs, createBlog, getBlogById, updateBlog, deleteBlog };
+module.exports = { getBlogs, createBlog, updateBlog, deleteBlog };
