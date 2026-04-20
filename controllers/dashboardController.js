@@ -39,3 +39,5 @@ module.exports = {
     getDashboardStats, 
     updateDashboardData 
 };
+
+module.exports = router; // এটি অবশ্যই থাকতে হবে
