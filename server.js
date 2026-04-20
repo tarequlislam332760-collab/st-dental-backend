@@ -21,6 +21,7 @@ const allowedOrigins = [
 
 app.use(cors({
     origin: function (origin, callback) {
+        // মোবাইল অ্যাপ বা লোকাল রিকোয়েস্টের জন্য !origin চেক
         if (!origin) return callback(null, true);
         if (allowedOrigins.indexOf(origin) === -1) {
             const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
@@ -36,11 +37,11 @@ app.use(cors({
 // ২. প্রি-ফ্লাইট (OPTIONS) রিকোয়েস্ট হ্যান্ডেল করা
 app.options('*', cors());
 
-// ৩. মিডলওয়্যার (লিমিট বাড়ানো হয়েছে ব্লগের ইমেজের জন্য)
-app.use(express.json({ limit: '50mb' })); // ব্লগে বড় ইমেজ বা কন্টেন্ট সেভ করার জন্য লিমিট বাড়ানো হলো
+// ৩. মিডলওয়্যার (ব্লগের বড় ইমেজের জন্য ৫৪mb লিমিট)
+app.use(express.json({ limit: '50mb' })); 
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-// ৪. কাস্টম হেডার মিডলওয়্যার
+// ৪. কাস্টম হেডার মিডলওয়্যার (CORS এর এক্সট্রা সিকিউরিটি)
 app.use((req, res, next) => {
     const origin = req.headers.origin;
     if (allowedOrigins.includes(origin)) {
@@ -57,7 +58,7 @@ const appointmentRoutes = require('./routes/appointmentRoutes');
 const reviewRoutes = require('./routes/reviewRoutes'); 
 const contactRoutes = require('./routes/contactRoutes'); 
 const dashboardRoutes = require('./routes/dashboardRoutes');
-const blogRoutes = require('./routes/blogRoutes'); // নিশ্চিত করুন এই ফাইলের নাম সঠিক আছে
+const blogRoutes = require('./routes/blogRoutes');
 
 // ৬. এপিআই এন্ডপয়েন্ট
 app.use('/api/appointments', appointmentRoutes);
@@ -69,15 +70,17 @@ app.use('/api/blogs', blogRoutes);
 // রুট পাথ চেক
 app.get('/', (req, res) => {
     res.status(200).json({ 
+        status: "success",
         message: 'ST Dental Clinic API is running perfectly...',
-        mongodb_status: process.env.MONGO_URI ? "Connected to Config" : "URI Missing"
+        mongodb_status: process.env.MONGO_URI ? "Configured" : "URI Missing"
     });
 });
 
-// ৭. এরর হ্যান্ডেলার
+// ৭. এরর হ্যান্ডেলার (অবশ্যই রাউটের নিচে থাকবে)
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
+
 app.listen(PORT, () => {
     console.log(`🚀 Server Running on Port: ${PORT}`.yellow.bold);
 });
