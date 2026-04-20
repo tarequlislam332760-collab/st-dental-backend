@@ -17,7 +17,7 @@ const appointmentRoutes = require('./routes/appointmentRoutes');
 const reviewRoutes = require('./routes/reviewRoutes'); 
 const contactRoutes = require('./routes/contactRoutes'); 
 const dashboardRoutes = require('./routes/dashboardRoutes');
-const blogRoutes = require('./routes/BlogRoutes'); // এখানে ব্লগ রাউট যোগ করা হয়েছে
+const blogRoutes = require('./routes/Blog'); // আপনার ফাইলের নাম অনুযায়ী 'Blog' দেওয়া হলো
 
 // ডাটাবেস কানেক্ট
 connectDB();
@@ -27,7 +27,7 @@ const app = express();
 // ৪. গ্লোবাল মিডলওয়্যার
 app.use(logger); 
 app.use(cors({
-    origin: ["https://st-dental-frontend.vercel.app", "http://localhost:5173"], // আপনার ফ্রন্টএন্ড ইউআরএল
+    origin: ["https://st-dental-frontend.vercel.app", "http://localhost:5173"], 
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
@@ -41,7 +41,7 @@ app.use('/api/appointments', appointmentRoutes);
 app.use('/api/reviews', reviewRoutes);          
 app.use('/api/contact', contactRoutes);         
 app.use('/api/dashboard', dashboardRoutes); 
-app.use('/api/blogs', blogRoutes); // ব্লগের জন্য এন্ডপয়েন্ট
+app.use('/api/blogs', blogRoutes); 
 
 // ৬. রুট রাউট
 app.get('/', (req, res) => {
