@@ -1,16 +1,20 @@
 const Appointment = require('../models/Appointment');
 
-// ১. নতুন অ্যাপয়েন্টমেন্ট তৈরি করা
 const createAppointment = async (req, res) => {
     try {
-        // ফ্রন্টএন্ড থেকে এই ৫টি ডাটা অবশ্যই পাঠাতে হবে
-        const { name, phone, service, appointmentDate, timeSlot } = req.body;
+        // ফ্রন্টএন্ড থেকে বিভিন্ন নামে ডাটা আসতে পারে, তাই আমরা সবগুলোকে চেক করছি
+        const name = req.body.name || req.body.fullName;
+        const phone = req.body.phone || req.body.phoneNumber;
+        const service = req.body.service || req.body.department || req.body.selectDepartment;
+        const appointmentDate = req.body.appointmentDate || req.body.preferredDate || req.body.date;
+        const timeSlot = req.body.timeSlot || req.body.preferredTime || req.body.time;
 
-        // চেক করা হচ্ছে সব ডাটা আসছে কি না
+        // চেক করা হচ্ছে সব ডাটা আছে কি না
         if (!name || !phone || !service || !appointmentDate || !timeSlot) {
             return res.status(400).json({ 
                 success: false, 
-                message: "সবগুলো ঘর পূরণ করা বাধ্যতামূলক (Required fields missing)" 
+                message: "সবগুলো ঘর পূরণ করা বাধ্যতামূলক (Required fields missing)",
+                receivedData: req.body // এটি আপনাকে ডিবাগ করতে সাহায্য করবে
             });
         }
 
@@ -28,7 +32,6 @@ const createAppointment = async (req, res) => {
     }
 };
 
-// ২. সব অ্যাপয়েন্টমেন্ট দেখা
 const getAppointments = async (req, res) => {
     try {
         const appointments = await Appointment.find().sort({ createdAt: -1 });
@@ -38,7 +41,6 @@ const getAppointments = async (req, res) => {
     }
 };
 
-// ৩. অ্যাপয়েন্টমেন্ট আপডেট করা
 const updateAppointment = async (req, res) => {
     try {
         const { id } = req.params;
@@ -47,18 +49,15 @@ const updateAppointment = async (req, res) => {
             { $set: req.body }, 
             { new: true, runValidators: true }
         );
-
         if (!updatedAppointment) {
             return res.status(404).json({ success: false, message: "Appointment not found" });
         }
-
         res.status(200).json({ success: true, data: updatedAppointment });
     } catch (error) {
         res.status(400).json({ success: false, message: error.message });
     }
 };
 
-// ৪. অ্যাপয়েন্টমেন্ট ডিলিট করা
 const deleteAppointment = async (req, res) => {
     try {
         const { id } = req.params;
@@ -72,9 +71,4 @@ const deleteAppointment = async (req, res) => {
     }
 };
 
-module.exports = { 
-    createAppointment, 
-    getAppointments, 
-    updateAppointment, 
-    deleteAppointment 
-};
+module.exports = { createAppointment, getAppointments, updateAppointment, deleteAppointment };
