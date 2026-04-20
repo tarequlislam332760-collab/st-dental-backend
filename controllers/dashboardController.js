@@ -40,4 +40,3 @@ module.exports = {
     updateDashboardData 
 };
 
-module.exports = router; // এটি অবশ্যই থাকতে হবে
