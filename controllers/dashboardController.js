@@ -5,6 +5,7 @@ const Review = require('../models/Review');
 const getDashboardStats = async (req, res) => {
     try {
         const totalAppointments = await Appointment.countDocuments();
+
         const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
         const newReviews = await Review.countDocuments({ createdAt: { $gte: sevenDaysAgo } });
 
