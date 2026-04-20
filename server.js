@@ -13,11 +13,11 @@ const { errorHandler } = require('./middleware/errorMiddleware');
 const logger = require('./middleware/logger');
 
 // ৩. রাউটস ইমপোর্ট
-const appointmentRoutes = require('./routes/appointmentRoutes');
+const AppointmentRoutes = require('./routes/AppointmentRoutes');
 const reviewRoutes = require('./routes/reviewRoutes'); 
 const contactRoutes = require('./routes/contactRoutes'); 
 const dashboardRoutes = require('./routes/dashboardRoutes');
-const blogRoutes = require('./routes/Blog'); // আপনার ফাইলের নাম অনুযায়ী 'Blog' দেওয়া হলো
+const BlogRoutes = require('./routes/Blog'); // আপনার ফাইলের নাম অনুযায়ী 'Blog' দেওয়া হলো
 
 // ডাটাবেস কানেক্ট
 connectDB();
