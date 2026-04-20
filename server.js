@@ -17,7 +17,7 @@ const appointmentRoutes = require('./routes/appointmentRoutes');
 const reviewRoutes = require('./routes/reviewRoutes'); 
 const contactRoutes = require('./routes/contactRoutes'); 
 const dashboardRoutes = require('./routes/dashboardRoutes');
-const blogRoutes = require('./routes/blogRoutes'); // এখানে ব্লগ রাউট যোগ করা হয়েছে
+const blogRoutes = require('./routes/BlogRoutes'); // এখানে ব্লগ রাউট যোগ করা হয়েছে
 
 // ডাটাবেস কানেক্ট
 connectDB();
