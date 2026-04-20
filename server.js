@@ -1,7 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 
-// ১. সবার আগে এনভায়রনমেন্ট ভেরিয়েবল লোড
+// ১. এনভায়রনমেন্ট ভেরিয়েবল লোড
 dotenv.config();
 
 const cors = require('cors');
@@ -17,6 +17,7 @@ const appointmentRoutes = require('./routes/appointmentRoutes');
 const reviewRoutes = require('./routes/reviewRoutes'); 
 const contactRoutes = require('./routes/contactRoutes'); 
 const dashboardRoutes = require('./routes/dashboardRoutes');
+const blogRoutes = require('./routes/blogRoutes'); // এখানে ব্লগ রাউট যোগ করা হয়েছে
 
 // ডাটাবেস কানেক্ট
 connectDB();
@@ -24,12 +25,14 @@ connectDB();
 const app = express();
 
 // ৪. গ্লোবাল মিডলওয়্যার
-app.use(logger); // রিকোয়েস্ট আসার সাথে সাথে লগ করার জন্য উপরে দেওয়া হয়েছে
+app.use(logger); 
 app.use(cors({
-    origin: '*', 
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    origin: ["https://st-dental-frontend.vercel.app", "http://localhost:5173"], // আপনার ফ্রন্টএন্ড ইউআরএল
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
 }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -38,6 +41,7 @@ app.use('/api/appointments', appointmentRoutes);
 app.use('/api/reviews', reviewRoutes);          
 app.use('/api/contact', contactRoutes);         
 app.use('/api/dashboard', dashboardRoutes); 
+app.use('/api/blogs', blogRoutes); // ব্লগের জন্য এন্ডপয়েন্ট
 
 // ৬. রুট রাউট
 app.get('/', (req, res) => {
@@ -47,7 +51,7 @@ app.get('/', (req, res) => {
 // ৭. ভুল রাউট হ্যান্ডলার (৪০৪)
 app.use((req, res, next) => {
     res.status(404);
-    next(new Error('Requested route not found!'));
+    next(new Error(`Requested route ${req.originalUrl} not found!`));
 });
 
 // ৮. গ্লোবাল এরর হ্যান্ডলার
@@ -59,7 +63,6 @@ app.listen(PORT, () => {
     console.log(`=========================================`.white);
     console.log(`🚀 Server Running on Port: ${PORT}`.yellow.bold);
     console.log(`📁 All Routes Connected Successfully`.cyan);
-    console.log(`📊 Dashboard Stats: ACTIVE`.magenta);
     console.log(`✅ MongoDB: Connected Successfully`.green);
     console.log(`=========================================`.white);
 });
