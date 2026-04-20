@@ -22,10 +22,10 @@ const allowedOrigins = [
 
 app.use(cors({
     origin: function (origin, callback) {
-        // allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
         if (allowedOrigins.indexOf(origin) === -1) {
-            return callback(null, true); // প্রোডাকশনে সমস্যা এড়াতে এটাকে ট্রু রাখা ভালো
+            // ডেভেলপমেন্টের সুবিধার জন্য প্রোডাকশনেও ট্রু রাখা হলো
+            return callback(null, true); 
         }
         return callback(null, true);
     },
@@ -59,16 +59,21 @@ app.use('/api/blogs', blogRoutes);
 app.get('/', (req, res) => {
     res.status(200).json({ 
         status: "success",
-        message: 'ST Dental Clinic API is running perfectly...',
+        message: 'ST Dental Clinic API is running on Vercel...',
         mongodb_status: process.env.MONGO_URI ? "Configured" : "URI Missing"
     });
 });
 
-// ৬. এরর হ্যান্ডেলার (অবশ্যই রাউটের নিচে থাকবে)
+// ৬. এরর হ্যান্ডেলার
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 5000;
+// ৭. ভার্সেলের জন্য এক্সপোর্ট (এটিই সবচেয়ে গুরুত্বপূর্ণ পরিবর্তন)
+module.exports = app;
 
-app.listen(PORT, () => {
-    console.log(`🚀 Server Running on Port: ${PORT}`.yellow.bold);
-});
+// লোকালহোস্টে চালানোর জন্য এই অংশটুকু
+const PORT = process.env.PORT || 5000;
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+        console.log(`🚀 Server Running on Port: ${PORT}`.yellow.bold);
+    });
+}
