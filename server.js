@@ -24,33 +24,31 @@ connectDB();
 
 const app = express();
 
-// ৪. গ্লোবাল মিডলওয়্যার সেটআপ
-app.use(cors());
+// ৪. গ্লোবাল মিডলওয়্যার সেটআপ (FIXED for Real-time Connection)
+app.use(cors({
+    origin: '*', 
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true })); // ফর্ম ডেটা রিড করার জন্য
 app.use(logger); 
 
 // ৫. এপিআই রাউটস
-// অ্যাডমিন প্যানেল এবং হোম পেজের অ্যাপয়েন্টমেন্ট হ্যান্ডেল করবে
 app.use('/api/appointments', appointmentRoutes);
-
-// রিভিউ সেকশন হ্যান্ডেল করবে
-app.use('/api/reviews', reviewRoutes);          
-
-// কন্টাক্ট ফর্ম হ্যান্ডেল করবে
-app.use('/api/contact', contactRoutes);         
-
-// অ্যাডমিন ড্যাশবোর্ডের স্ট্যাটাস (Stats) হ্যান্ডেল করবে
+app.use('/api/reviews', reviewRoutes);          
+app.use('/api/contact', contactRoutes);         
 app.use('/api/dashboard', dashboardRoutes); 
 
 // ৬. রুট রাউট
 app.get('/', (req, res) => {
-    res.send('ST Dental & Facial Clinic API is running perfectly...');
+    res.send('ST Dental & Facial Clinic API is running perfectly...');
 });
 
 // ৭. ভুল রাউট হ্যান্ডলার (৪০৪)
 app.use((req, res, next) => {
-    res.status(404);
-    next(new Error('Requested route not found!'));
+    res.status(404);
+    next(new Error('Requested route not found!'));
 });
 
 // ৮. গ্লোবাল এরর হ্যান্ডলার
@@ -60,10 +58,10 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-    console.log(`=========================================`.white);
-    console.log(`🚀 Server Running on Port: ${PORT}`.yellow.bold);
-    console.log(`📁 All Routes Connected Successfully`.cyan);
-    console.log(`📊 Dashboard Stats: ACTIVE`.magenta);
-    console.log(`✅ MongoDB: Waiting for connection...`.green);
-    console.log(`=========================================`.white);
+    console.log(`=========================================`.white);
+    console.log(`🚀 Server Running on Port: ${PORT}`.yellow.bold);
+    console.log(`📁 All Routes Connected Successfully`.cyan);
+    console.log(`📊 Dashboard Stats: ACTIVE`.magenta);
+    console.log(`✅ MongoDB: Connected Successfully`.green);
+    console.log(`=========================================`.white);
 });
