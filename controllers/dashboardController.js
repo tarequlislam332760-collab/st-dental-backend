@@ -1,11 +1,10 @@
 const Appointment = require('../models/Appointment');
 const Review = require('../models/Review');
 
-// ১. ড্যাশবোর্ড স্ট্যাটাস পাওয়ার লজিক
+// ১. ড্যাশবোর্ড স্ট্যাটাস পাওয়ার লজিক
 const getDashboardStats = async (req, res) => {
     try {
         const totalAppointments = await Appointment.countDocuments();
-
         const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
         const newReviews = await Review.countDocuments({ createdAt: { $gte: sevenDaysAgo } });
 
