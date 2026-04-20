@@ -1,6 +1,6 @@
 const Blog = require('../models/blogModel');
 
-// ১. সব ব্লগ দেখা (অ্যাডমিন ও ইউজার সবার জন্য)
+// ১. সব ব্লগ দেখা
 const getBlogs = async (req, res) => {
     try {
         const blogs = await Blog.find().sort({ createdAt: -1 });
@@ -10,18 +10,23 @@ const getBlogs = async (req, res) => {
     }
 };
 
-// ২. নতুন ব্লগ সেভ করা (Save Option)
+// ২. নতুন ব্লগ সেভ করা (Frontend-এর 'content' ফিল্ডের সাথে মিল রাখা হয়েছে)
 const createBlog = async (req, res) => {
     try {
-        const { title, description, image, category } = req.body;
-        const newBlog = await Blog.create({ title, description, image, category });
+        const { title, content, image, author } = req.body; // description এর বদলে content
+        const newBlog = await Blog.create({ 
+            title, 
+            content, // Schema অনুযায়ী চেক করুন
+            image, 
+            author: author || 'Admin' 
+        });
         res.status(201).json(newBlog);
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
 }
 
-// ৩. ব্লগ আপডেট করা (Edit/Update Option)
+// ৩. ব্লগ আপডেট করা
 const updateBlog = async (req, res) => {
     try {
         const { id } = req.params;
@@ -37,7 +42,7 @@ const updateBlog = async (req, res) => {
     }
 };
 
-// ৪. ব্লগ ডিলিট করা (Delete Option)
+// ৪. ব্লগ ডিলিট করা
 const deleteBlog = async (req, res) => {
     try {
         const { id } = req.params;
