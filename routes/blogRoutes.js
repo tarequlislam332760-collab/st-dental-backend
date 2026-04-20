@@ -7,16 +7,28 @@ const {
     deleteBlog 
 } = require('../controllers/blogController');
 
-// ১. সব ব্লগ পাওয়ার জন্য
+/**
+ * @route   GET /api/blogs
+ * @desc    সব ব্লগগুলো ডাটাবেজ থেকে নিয়ে আসবে
+ */
 router.get('/', getBlogs);
 
-// ২. নতুন ব্লগ তৈরি করার জন্য
+/**
+ * @route   POST /api/blogs
+ * @desc    অ্যাডমিন প্যানেল থেকে নতুন ব্লগ সেভ করবে
+ */
 router.post('/', createBlog);
 
-// ৩. ব্লগ আপডেট করার জন্য (ID সহ)
+/**
+ * @route   PUT /api/blogs/:id
+ * @desc    নির্দিষ্ট আইডি অনুযায়ী ব্লগ এডিট/আপডেট করবে
+ */
 router.put('/:id', updateBlog);
 
-// ৪. ব্লগ ডিলিট করার জন্য (ID সহ)
+/**
+ * @route   DELETE /api/blogs/:id
+ * @desc    নির্দিষ্ট আইডি অনুযায়ী ব্লগ ডাটাবেজ থেকে মুছে ফেলবে
+ */
 router.delete('/:id', deleteBlog);
 
 module.exports = router;

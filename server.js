@@ -21,7 +21,6 @@ const allowedOrigins = [
 
 app.use(cors({
     origin: function (origin, callback) {
-        // allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
         if (allowedOrigins.indexOf(origin) === -1) {
             const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
@@ -34,14 +33,14 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
 }));
 
-// ২. প্রি-ফ্লাইট (OPTIONS) রিকোয়েস্ট হ্যান্ডেল করা
+// ২. প্রি-ফ্লাইট (OPTIONS) রিকোয়েস্ট হ্যান্ডেল করা
 app.options('*', cors());
 
-// ৩. মিডলওয়্যার
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// ৩. মিডলওয়্যার (লিমিট বাড়ানো হয়েছে ব্লগের ইমেজের জন্য)
+app.use(express.json({ limit: '50mb' })); // ব্লগে বড় ইমেজ বা কন্টেন্ট সেভ করার জন্য লিমিট বাড়ানো হলো
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-// ৪. কাস্টম হেডার মিডলওয়্যার (CORS এরর পুরোপুরি বন্ধ করতে)
+// ৪. কাস্টম হেডার মিডলওয়্যার
 app.use((req, res, next) => {
     const origin = req.headers.origin;
     if (allowedOrigins.includes(origin)) {
@@ -58,7 +57,7 @@ const appointmentRoutes = require('./routes/appointmentRoutes');
 const reviewRoutes = require('./routes/reviewRoutes'); 
 const contactRoutes = require('./routes/contactRoutes'); 
 const dashboardRoutes = require('./routes/dashboardRoutes');
-const blogRoutes = require('./routes/blogRoutes');
+const blogRoutes = require('./routes/blogRoutes'); // নিশ্চিত করুন এই ফাইলের নাম সঠিক আছে
 
 // ৬. এপিআই এন্ডপয়েন্ট
 app.use('/api/appointments', appointmentRoutes);
@@ -75,7 +74,7 @@ app.get('/', (req, res) => {
     });
 });
 
-// ৭. এরর হ্যান্ডেলার (সবার শেষে থাকবে)
+// ৭. এরর হ্যান্ডেলার
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
