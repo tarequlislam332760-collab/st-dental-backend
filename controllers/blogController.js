@@ -1,20 +1,25 @@
 const Blog = require('../models/blogModel');
 
-// ১. সব ব্লগ দেখা
+// ১. সব ব্লগ দেখা (সবচেয়ে নতুনটা আগে আসবে)
 const getBlogs = async (req, res) => {
     try {
         const blogs = await Blog.find().sort({ createdAt: -1 });
         res.status(200).json(blogs);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: "Server error while fetching blogs" });
     }
 };
 
 // ২. নতুন ব্লগ সেভ করা
 const createBlog = async (req, res) => {
+    const { title, content, image, category, author } = req.body;
+
+    // ভ্যালিডেশন
+    if (!title || !content) {
+        return res.status(400).json({ message: "Title and Content are required!" });
+    }
+
     try {
-        const { title, content, image, category, author } = req.body;
-        
         const newBlog = await Blog.create({ 
             title, 
             content, 
@@ -22,10 +27,9 @@ const createBlog = async (req, res) => {
             category,
             author: author || 'Admin' 
         });
-        
         res.status(201).json(newBlog);
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        res.status(400).json({ message: "Failed to create blog" });
     }
 };
 
@@ -45,7 +49,7 @@ const updateBlog = async (req, res) => {
         
         res.status(200).json(updatedBlog);
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        res.status(400).json({ message: "Update failed. Check ID or Data" });
     }
 };
 
@@ -61,7 +65,7 @@ const deleteBlog = async (req, res) => {
         
         res.status(200).json({ message: "Blog deleted successfully" });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: "Delete operation failed" });
     }
 };
 
