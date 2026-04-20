@@ -16,7 +16,7 @@ const getDashboardStats = async (req, res) => {
             .sort({ createdAt: -1 })
             .limit(5);
 
-        res.json({
+        res.status(200).json({
             totalAppointments,
             newReviews,
             totalPatients,
@@ -27,18 +27,15 @@ const getDashboardStats = async (req, res) => {
     }
 };
 
-// ২. ড্যাশবোর্ড আপডেট করার লজিক (যা আগে ছিল না)
+// ২. ড্যাশবোর্ড আপডেট করার লজিক
 const updateDashboardData = async (req, res) => {
     try {
-        // এখানে আপনার আপডেট লজিক হবে। আপাতত সাকসেস মেসেজ পাঠানো হলো।
-        // যেহেতু আপনি ফ্রন্টএন্ড থেকে PUT রিকোয়েস্ট দিচ্ছেন, তাই এই ফাংশনটি থাকা জরুরি।
         res.status(200).json({ message: "Dashboard updated successfully" });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 };
 
-// এই দুটি ফাংশনকেই এক্সপোর্ট করতে হবে
 module.exports = { 
     getDashboardStats, 
     updateDashboardData 
