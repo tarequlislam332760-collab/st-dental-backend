@@ -4,22 +4,17 @@ const cors = require('cors');
 const colors = require('colors');
 const connectDB = require('./config/db');
 const { errorHandler } = require('./middleware/errorMiddleware');
-
 // এনভায়রনমেন্ট ভেরিয়েবল লোড করা
 dotenv.config();
-
 // ডাটাবেস কানেকশন
 connectDB();
-
 const app = express();
-
 // ১. সঠিক ও ক্লিন CORS কনফিগারেশন
 const allowedOrigins = [
     "https://st-dental-frontend.vercel.app",
     "http://localhost:5173",
     "http://localhost:3000"
 ];
-
 app.use(cors({
     origin: function (origin, callback) {
         if (!origin) return callback(null, true);
@@ -32,30 +27,27 @@ app.use(cors({
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
 }));
-
 // ২. প্রি-ফ্লাইট (OPTIONS) রিকোয়েস্ট হ্যান্ডেল করা
 app.options('*', cors());
-
 // ৩. মিডলওয়্যার
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
-
 // ৪. রাউটস ইমপোর্ট
 const appointmentRoutes  = require('./routes/appointmentRoutes');
 const reviewRoutes       = require('./routes/reviewRoutes');
 const contactRoutes      = require('./routes/contactRoutes');
 const dashboardRoutes    = require('./routes/dashboardRoutes');
 const blogRoutes         = require('./routes/blogRoutes');
-const siteContentRoutes  = require('./routes/siteContentRoutes'); // ✅ নতুন
-
+const siteContentRoutes  = require('./routes/siteContentRoutes');
+const serviceSessionRoutes = require('./routes/serviceSessionRoutes'); // ✅ নতুন — সেশন ট্র্যাকিং
 // ৫. এপিআই এন্ডপয়েন্ট
 app.use('/api/appointments',  appointmentRoutes);
 app.use('/api/reviews',       reviewRoutes);
 app.use('/api/contact',       contactRoutes);
 app.use('/api/dashboard',     dashboardRoutes);
 app.use('/api/blogs',         blogRoutes);
-app.use('/api/site-content',  siteContentRoutes); // ✅ নতুন
-
+app.use('/api/site-content',  siteContentRoutes);
+app.use('/api/service-sessions', serviceSessionRoutes); // ✅ নতুন
 // রুট পাথ চেক
 app.get('/', (req, res) => {
     res.status(200).json({
@@ -64,12 +56,9 @@ app.get('/', (req, res) => {
         mongodb_status: process.env.MONGO_URI ? "Configured" : "URI Missing"
     });
 });
-
 // ৬. এরর হ্যান্ডেলার
 app.use(errorHandler);
-
 const PORT = process.env.PORT || 5000;
-
 app.listen(PORT, () => {
     console.log(`🚀 Server Running on Port: ${PORT}`.yellow.bold);
 });
